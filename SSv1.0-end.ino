@@ -1,12 +1,13 @@
+//  Empresa: Silica Networks SA.
 /*
-  @Copyright 2023 Silca Networks SA
-  Desarrolador: Ivan Andrade
-  Fecha:  16/02/2023
-  Dispositivo: Sistema de Sensado (SSv1.0)
+ *  Copyright (C) 2023  Ivan Leon Andrade Franco
+ *  Sistema de Sensado (SSv1.0).
+ *
+ *  Sensa temperatura, humedad relativa y corriente continua 
+ *  Utilizando el protocolo SNMP v1. 
+  */
 
-  El equipo SSv1.0 sensa temperatura, humedad relativa y corriente continua 
-  utilizando la plataforma de desarrollo Arduino y el protocolo SNMP v1.
-*/
+  
 #include <SPI.h>
 #include <Ethernet.h>
 #include <Streaming.h>
@@ -15,21 +16,22 @@
 #include <Agentuino.h>
 #include <DHT.h>
 
-  
-// CS = Current sensor; DHT22 = Temp & Hum sensor
-const uint8_t  dht_pin = 5;
-const uint8_t  cs_pin = 0;
+ /*
+  *  El termino cs (Current Sensor) indica que la variable  
+  *  esta relacionada con el sensor de corriente.
+  */
 
-// Variables transmitidas via SNMP
-float current = 0.0;
+const uint8_t  dht_pin = 5;
+const uint8_t  cs_pin = 0; 
+
+// Las magnitudes se envian con las solicitudes SNMP (GET)
+float corriente = 0.0;
 float humedad = 0.0;
 float temperatura = 0.0;
 
-// Calibrar CS
-/* temporalmente comentado: 
-const float cs_voltage_delta = 2475.0; // Centra lectura del sensor en 0V*/
-const float cs_voltage_delta = 2500.0;
-const float cs_relation_VoltAmper = 12.0; // Sensibilidad: mV/A
+// Calibra CS
+const float cs_tension_offset = 2475.0; // Centra lectura del sensor en 0V*/
+const float cs_sensitivity = 12.0; //  [mV]
 
 DHT dht(dht_pin, DHT22);
 
@@ -49,7 +51,7 @@ const char sysServices[] PROGMEM   = "1.3.6.1.2.1.1.7.0";
 
 const char snmp_temperature[]     PROGMEM     = "1.3.6.1.3.2016.5.1.0";
 const char snmp_humidity[]        PROGMEM     = "1.3.6.1.3.2016.5.1.1";
-const char snmp_current[]        PROGMEM     = "1.3.6.1.3.2016.5.1.2";
+const char snmp_corriente[]        PROGMEM     = "1.3.6.1.3.2016.5.1.2";
 
 static char locDescr[35]            = "Sistema de Sensado v1.0";
 static char locContact[25]          = "Silica Networks SA";
@@ -62,20 +64,34 @@ char oid[SNMP_MAX_OID_LEN];
 SNMP_API_STAT_CODES api_status;
 SNMP_ERR_CODES status;
 
-//  Promedia y calcula los valores de corriente.
-float deltaCurrent() {
-  float current_sum = 0.0;
-  float cs_voltage = 0.0;
+/** 
+ *  calculo_corriente
+ *  @cs_sensitivity: Razon de tension por Amper (12mV/A). 
+ *  @cs_tension_offset: Centra la tension de lectura en cero.
+ *  
+ *  Calcula y promedia el resultado de la corriente [A].
+ *  
+ *  CS entrega un rango de tension 0 a 5 en [V]. Con 2.5V, 0A; 5V, 210A; 0V, -210A. Tension de
+ *  lectura > 2.5v es corriente positiva, caso contrario, corriente negativa.
+ */ 
+float calculo_corriente() {
+  float cs_suma = 0.0;
+  float cs_tension = 0.0;
 
   for (uint8_t i = 0; i < 4; i++) {
-    cs_voltage = (analogRead(cs_pin) * 5000.0) / 1023.0;
-    current_sum += (cs_voltage - cs_voltage_delta) / cs_relation_VoltAmper;
+    cs_tension = (analogRead(cs_pin) * 5000.0) / 1023.0;
+    cs_suma += (cs_tension - cs_tension_offset) / cs_sensitivity;
     delay(250);
   }
 
-  return current_sum / 4.0;
+  return cs_suma / 4.0;
 }
 
+/*
+ * 
+ * 
+ * 
+ */
 
 void pduReceived() {
   SNMP_PDU pdu;
@@ -173,7 +189,7 @@ void pduReceived() {
         pdu.type = SNMP_PDU_RESPONSE;
         pdu.error = status;
       }
-    } else if ( strcmp_P(oid, snmp_current ) == 0 ) {
+    } else if ( strcmp_P(oid, snmp_corriente ) == 0 ) {
       // handle sysName (set/get) requests
       if ( pdu.type == SNMP_PDU_SET ) {
 
@@ -181,7 +197,7 @@ void pduReceived() {
         pdu.error = SNMP_ERR_READ_ONLY;
       }
       else {
-        status = pdu.VALUE.encode(SNMP_SYNTAX_OCTETS, dtostrf(current, 6, 2, result));
+        status = pdu.VALUE.encode(SNMP_SYNTAX_OCTETS, dtostrf(corriente, 6, 2, result));
         pdu.type = SNMP_PDU_RESPONSE;
         pdu.error = status;
       }
@@ -220,7 +236,7 @@ void loop() {
   if (millis() - prevMillis > 2000) {
     temperatura = dht.readTemperature();
     humedad = dht.readHumidity();
-    current = deltaCurrent();
+    corriente = calculo_corriente();
     
     prevMillis = millis();
   }
