@@ -209,11 +209,9 @@ void pduReceived() {
 
 
 void setup() {
-  dht.begin();
   Ethernet.begin(mac, ip, ip_dns, ip_gateway, subnet);
-
-  // Inicia agente SNMP
-  api_status = Agentuino.begin();
+  api_status = Agentuino.begin(); // Inicia agente SNMP
+  dht.begin();
 
   // Verificación estado agente SNMP
   if ( api_status == SNMP_API_STAT_SUCCESS ) {
