@@ -1,3 +1,12 @@
+/*
+  @Copyrigth 2023 Silca Networks SA
+  Desarrolador: Ivan Andrade
+  Fecha:  16/02/2023
+  Dispositivo: Sistema de Sensado (SSv1.0)
+
+  El equipo SSv1.0 sensa temperatura, humedad relativa y corriente continua 
+  utilizando la plataforma de desarrollo Arduino y el protocolo SNMP v1.
+*/
 #include <SPI.h>
 #include <Ethernet.h>
 #include <Streaming.h>
@@ -17,7 +26,9 @@ float humedad = 0.0;
 float temperatura = 0.0;
 
 // Calibrar CS
-const float cs_voltage_delta = 2475.0; // Centra lectura del sensor en 0V
+/* temporalmente comentado: 
+const float cs_voltage_delta = 2475.0; // Centra lectura del sensor en 0V*/
+const float cs_voltage_delta = 2500.0;
 const float cs_relation_VoltAmper = 12.0; // Sensibilidad: mV/A
 
 DHT dht(dht_pin, DHT22);
@@ -27,7 +38,6 @@ IPAddress ip(192, 168, 0, 95);
 IPAddress ip_dns(192, 168, 1, 1);
 IPAddress ip_gateway(192, 168, 0, 1);
 IPAddress subnet(255, 255, 255, 0);
-
 
 char result[8];
 
@@ -57,7 +67,7 @@ float deltaCurrent() {
   float current_sum = 0.0;
   float cs_voltage = 0.0;
 
-  for (int i = 0; i < 4; i++) {
+  for (uint8_t i = 0; i < 4; i++) {
     cs_voltage = (analogRead(cs_pin) * 5000.0) / 1023.0;
     current_sum += (cs_voltage - cs_voltage_delta) / cs_relation_VoltAmper;
     delay(250);
@@ -207,11 +217,11 @@ void setup() {
 
 void loop() {
   Agentuino.listen();
-
   if (millis() - prevMillis > 2000) {
     temperatura = dht.readTemperature();
-    current = deltaCurrent();
     humedad = dht.readHumidity();
+    current = deltaCurrent();
+    
     prevMillis = millis();
   }
 }
