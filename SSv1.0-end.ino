@@ -15,11 +15,11 @@
 #include <Agentuino.h>
 #include <DHT.h>
 
-// cs: Relaciona una variable con el sensor de corriente
+// cs: Variable relacionada con el sensor de corriente (Current Sensor)
 const uint8_t  dht_pin = 5;
 const uint8_t  cs_pin = 0; 
 
-// Las magnitudes se envian con las solicitudes SNMP (GET)
+// Las magnitudes se envian con solicitudes SNMP (GET)
 float corriente = 0.0;
 float humedad = 0.0;
 float temperatura = 0.0;
@@ -83,10 +83,11 @@ float calculo_corriente() {
 }
 
 /** pduReceived
- *  
- *  Maneja las solicitudes SNMP. Para los OID, responde
+ *  Maneja solicitudes SNMP. Para los OID, responde
  *  con mensaje de error: READ_ONLY, si la solicitud SNMP
  *  es SET.
+ *  
+ *  Nota: No pueden enviarse TRAPS.
  */
 void pduReceived() {
   SNMP_PDU pdu;
@@ -220,15 +221,14 @@ void setup() {
     delay(10);
     return;
   }
-
-  // Retraso estado no éxito
+  
   delay(10);
 }
 
 
 void loop() {
   Agentuino.listen();
-  // Leé y actualiza los magnitudes cada 2s
+  // Actualiza los valores cada 2s
   if (millis() - prevMillis > 2000) {
     temperatura = dht.readTemperature();
     humedad = dht.readHumidity();
