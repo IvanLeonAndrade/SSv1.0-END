@@ -12,9 +12,9 @@ const uint8_t  dht_pin = 5;
 const uint8_t  cs_pin = 0;
 
 // Variables que se transmiten via SNMP
-uint8_t current = 0;
-float humedad = 0;
-float temperatura = 0;
+float current = 0.0;
+float humedad = 0.0;
+float temperatura = 0.0;
 
 // Calibrar CS
 const float cs_voltage_delta = 2475.0; // Centra lectura del sensor en 0V
