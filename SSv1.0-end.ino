@@ -1,5 +1,5 @@
 /*
-  @Copyrigth 2023 Silca Networks SA
+  @Copyright 2023 Silca Networks SA
   Desarrolador: Ivan Andrade
   Fecha:  16/02/2023
   Dispositivo: Sistema de Sensado (SSv1.0)
