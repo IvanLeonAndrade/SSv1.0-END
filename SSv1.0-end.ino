@@ -53,11 +53,8 @@ SNMP_API_STAT_CODES api_status;
 SNMP_ERR_CODES status;
 
 
-/*
-  Promedia los resultados de corriente. Calcula la tension y la transforma a corriente segun la 
-  sensibiliada del sensor. En este caso es de 12mV/A. 
-*/
 
+//  Promedia los valores de corriente.
 float deltaCurrent() {
   float current_sum = 0.0;
   float cs_voltage = 0.0;
@@ -68,7 +65,7 @@ float deltaCurrent() {
     delay(250);
   }
 
-  return current_sum / 4;
+  return current_sum / 4.0;
 }
 
 void pduReceived() {
