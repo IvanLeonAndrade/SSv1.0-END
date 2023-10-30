@@ -229,6 +229,7 @@ void setup() {
 
 void loop() {
   Agentuino.listen();
+  // Leé y actualiza los magnitudes cada 2s
   if (millis() - prevMillis > 2000) {
     temperatura = dht.readTemperature();
     humedad = dht.readHumidity();
