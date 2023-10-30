@@ -66,7 +66,7 @@ SNMP_ERR_CODES status;
  *  
  *  Calcula y promedia el resultado de la corriente [A].
  *  
- *  CS entrega un rango de tension de 0 a 5 en [V]. Con 2.5V, 0A; 5V, 210A; 0V, -210A. Tension 
+ *  cs entrega un rango de tension de 0 a 5 en [V]. Con 2.5V, 0A; 5V, 210A; 0V, -210A. Tension 
  *  de lectura > 2.5v, es corriente positiva, caso contrario, corriente negativa.
  */ 
 float calculo_corriente() {
@@ -81,7 +81,6 @@ float calculo_corriente() {
 
   return cs_suma / 4.0;
 }
-
 
 /** pduReceived
  *  
