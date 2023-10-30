@@ -7,11 +7,11 @@
 #include <DHT.h>
 
   
-// PIN sensores: CS = Current sensor; DHT22 = Temp & Hum sensor
+// CS = Current sensor; DHT22 = Temp & Hum sensor
 const uint8_t  dht_pin = 5;
 const uint8_t  cs_pin = 0;
 
-// Variables que se transmiten via SNMP
+// Variables transmitidas via SNMP
 float current = 0.0;
 float humedad = 0.0;
 float temperatura = 0.0;
@@ -41,9 +41,9 @@ const char snmp_temperature[]     PROGMEM     = "1.3.6.1.3.2016.5.1.0";
 const char snmp_humidity[]        PROGMEM     = "1.3.6.1.3.2016.5.1.1";
 const char snmp_current[]        PROGMEM     = "1.3.6.1.3.2016.5.1.2";
 
-static char locDescr[35]            = "System Sensing v1.0";
+static char locDescr[35]            = "Sistema de Sensado v1.0";
 static char locContact[25]          = "Silica Networks SA";
-static char locName[20]             = "A NOC product";
+static char locName[20]             = "Made NOC";
 static char locLocation[20]         = "SMA 638 - CABA";
 static int32_t locServices          = 2;
 
@@ -52,9 +52,7 @@ char oid[SNMP_MAX_OID_LEN];
 SNMP_API_STAT_CODES api_status;
 SNMP_ERR_CODES status;
 
-
-
-//  Promedia los valores de corriente.
+//  Promedia y calcula los valores de corriente.
 float deltaCurrent() {
   float current_sum = 0.0;
   float cs_voltage = 0.0;
@@ -67,6 +65,7 @@ float deltaCurrent() {
 
   return current_sum / 4.0;
 }
+
 
 void pduReceived() {
   SNMP_PDU pdu;
