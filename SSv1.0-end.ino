@@ -1,12 +1,11 @@
-//  Empresa: Silica Networks SA.
+//  Sistema de Sensado (SSv1.0)
 /*
  *  Copyright (C) 2023  Ivan Leon Andrade Franco
- *  Sistema de Sensado (SSv1.0).
+ *  Empresa: Silica Networks SA
  *
- *  Sensa temperatura, humedad relativa y corriente continua 
- *  Utilizando el protocolo SNMP v1. 
+ *  Sensa temperatura, humedad relativa y corriente  
+ *  continua con el protocolo SNMP v1
   */
-
   
 #include <SPI.h>
 #include <Ethernet.h>
@@ -16,11 +15,7 @@
 #include <Agentuino.h>
 #include <DHT.h>
 
- /*
-  *  El termino cs (Current Sensor) indica que la variable  
-  *  esta relacionada con el sensor de corriente.
-  */
-
+// cs: Relaciona una variable con el sensor de corriente
 const uint8_t  dht_pin = 5;
 const uint8_t  cs_pin = 0; 
 
@@ -30,7 +25,7 @@ float humedad = 0.0;
 float temperatura = 0.0;
 
 // Calibra CS
-const float cs_tension_offset = 2475.0; // Centra lectura del sensor en 0V*/
+const float cs_tension_offset = 2475.0; 
 const float cs_sensitivity = 12.0; //  [mV]
 
 DHT dht(dht_pin, DHT22);
@@ -65,14 +60,14 @@ SNMP_API_STAT_CODES api_status;
 SNMP_ERR_CODES status;
 
 /** 
- *  calculo_corriente
- *  @cs_sensitivity: Razon de tension por Amper (12mV/A). 
- *  @cs_tension_offset: Centra la tension de lectura en cero.
+ *  calculo_corriente - promedio
+ *  @cs_sensitivity: Razon de la lectura de tension del cs por Amper (12mV/A)
+ *  @cs_tension_offset: Centra la tension de lectura en cero
  *  
  *  Calcula y promedia el resultado de la corriente [A].
  *  
- *  CS entrega un rango de tension 0 a 5 en [V]. Con 2.5V, 0A; 5V, 210A; 0V, -210A. Tension de
- *  lectura > 2.5v es corriente positiva, caso contrario, corriente negativa.
+ *  CS entrega un rango de tension de 0 a 5 en [V]. Con 2.5V, 0A; 5V, 210A; 0V, -210A. Tension 
+ *  de lectura > 2.5v, es corriente positiva, caso contrario, corriente negativa.
  */ 
 float calculo_corriente() {
   float cs_suma = 0.0;
@@ -87,12 +82,13 @@ float calculo_corriente() {
   return cs_suma / 4.0;
 }
 
-/*
- * 
- * 
- * 
- */
 
+/** pduReceived
+ *  
+ *  Maneja las solicitudes SNMP. Para los OID, responde
+ *  con mensaje de error: READ_ONLY, si la solicitud SNMP
+ *  es SET.
+ */
 void pduReceived() {
   SNMP_PDU pdu;
   api_status = Agentuino.requestPdu(&pdu);
