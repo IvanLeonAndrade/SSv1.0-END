@@ -1,11 +1,10 @@
-//  Sistema de Sensado (SSv1.0)
-/*
- *  Copyright (C) 2023  Ivan Leon Andrade Franco
+/*  Sistema de Sensado Versión 1.0 (SSv1.0)
+ *  Copyright (C) 2023  Iván León Andrade Franco
  *  Empresa: Silica Networks SA
  *
  *  Sensa temperatura, humedad relativa y corriente  
- *  continua con el protocolo SNMP v1
-  */
+ *  continua. Las magnitudes obtienen con SNMP v1.
+ */
   
 #include <SPI.h>
 #include <Ethernet.h>
@@ -15,18 +14,17 @@
 #include <Agentuino.h>
 #include <DHT.h>
 
-// cs: Variable relacionada con el sensor de corriente (Current Sensor)
+
+// cs: Current Sensor
 const uint8_t  dht_pin = 5;
 const uint8_t  cs_pin = 0; 
 
-// Las magnitudes se envian con solicitudes SNMP (GET)
 float corriente = 0.0;
 float humedad = 0.0;
 float temperatura = 0.0;
 
-// Calibra CS
 const float cs_tension_offset = 2475.0; 
-const float cs_sensitivity = 12.0; //  [mV]
+const float cs_sensitivity = 12.0;
 
 DHT dht(dht_pin, DHT22);
 
@@ -60,14 +58,13 @@ SNMP_API_STAT_CODES api_status;
 SNMP_ERR_CODES status;
 
 /** 
- *  calculo_corriente - promedio
- *  @cs_sensitivity: Razon de la lectura de tension del cs por Amper (12mV/A)
- *  @cs_tension_offset: Centra la tension de lectura en cero
+ *  calculo_corriente
+ *  Ajustar valor de variables según las caracteristicas del sensor
  *  
- *  Calcula y promedia el resultado de la corriente [A].
+ *  @cs_sensitivity: Razon de la lectura de tension del cs x Amper [12mV/A]
+ *  @cs_tension_offset: Centra la tension de lectura en 0.
  *  
- *  cs entrega un rango de tension de 0 a 5 en [V]. Con 2.5V, 0A; 5V, 210A; 0V, -210A. Tension 
- *  de lectura > 2.5v, es corriente positiva, caso contrario, corriente negativa.
+ *  Calcula y promedia el resultado de corriente [A].
  */ 
 float calculo_corriente() {
   float cs_suma = 0.0;
@@ -82,89 +79,66 @@ float calculo_corriente() {
   return cs_suma / 4.0;
 }
 
-/** pduReceived
- *  Maneja solicitudes SNMP. Para los OID, responde
- *  con mensaje de error: READ_ONLY, si la solicitud SNMP
- *  es SET.
- *  
- *  Nota: No pueden enviarse TRAPS.
- */
 void pduReceived() {
   SNMP_PDU pdu;
   api_status = Agentuino.requestPdu(&pdu);
 
-  if ((pdu.type == SNMP_PDU_GET || pdu.type == SNMP_PDU_GET_NEXT || pdu.type == SNMP_PDU_SET)
-      && pdu.error == SNMP_ERR_NO_ERROR && api_status == SNMP_API_STAT_SUCCESS ) {
-
+  bool isSnmpGetOperation = pdu.type == SNMP_PDU_GET || pdu.type == SNMP_PDU_GET_NEXT || pdu.type == SNMP_PDU_SET;
+  bool isErrorFree = pdu.error == SNMP_ERR_NO_ERROR;
+  bool isSuccess = api_status == SNMP_API_STAT_SUCCESS;
+  
+  if (isSnmpGetOperation && isErrorFree && isSuccess) {
     pdu.OID.toString(oid);
-
     if ( strcmp_P(oid, sysDescr ) == 0 ) {
       if ( pdu.type == SNMP_PDU_SET ) {
-
         pdu.type = SNMP_PDU_RESPONSE;
         pdu.error = SNMP_ERR_READ_ONLY;
       } else {
-
         status = pdu.VALUE.encode(SNMP_SYNTAX_OCTETS, locDescr);
         pdu.type = SNMP_PDU_RESPONSE;
         pdu.error = status;
       }
     } else if ( strcmp_P(oid, sysName ) == 0 ) {
-
       if ( pdu.type == SNMP_PDU_SET ) {
-
         status = pdu.VALUE.decode(locName, strlen(locName));
         pdu.type = SNMP_PDU_RESPONSE;
         pdu.error = status;
       } else {
-
         status = pdu.VALUE.encode(SNMP_SYNTAX_OCTETS, locName);
         pdu.type = SNMP_PDU_RESPONSE;
         pdu.error = status;
       }
     } else if ( strcmp_P(oid, sysContact ) == 0 ) {
-
       if ( pdu.type == SNMP_PDU_SET ) {
-
         status = pdu.VALUE.decode(locContact, strlen(locContact));
         pdu.type = SNMP_PDU_RESPONSE;
         pdu.error = status;
       } else {
-
         status = pdu.VALUE.encode(SNMP_SYNTAX_OCTETS, locContact);
         pdu.type = SNMP_PDU_RESPONSE;
         pdu.error = status;
       }
     } else if ( strcmp_P(oid, sysLocation ) == 0 ) {
-
       if ( pdu.type == SNMP_PDU_SET ) {
-
         status = pdu.VALUE.decode(locLocation, strlen(locLocation));
         pdu.type = SNMP_PDU_RESPONSE;
         pdu.error = status;
       } else {
-
         status = pdu.VALUE.encode(SNMP_SYNTAX_OCTETS, locLocation);
         pdu.type = SNMP_PDU_RESPONSE;
         pdu.error = status;
       }
-      //
     } else if ( strcmp_P(oid, sysServices) == 0 ) {
-
       if ( pdu.type == SNMP_PDU_SET ) {
-
         pdu.type = SNMP_PDU_RESPONSE;
         pdu.error = SNMP_ERR_READ_ONLY;
       } else {
-
         status = pdu.VALUE.encode(SNMP_SYNTAX_INT, locServices);
         pdu.type = SNMP_PDU_RESPONSE;
         pdu.error = status;
       }
     } else if ( strcmp_P(oid, snmp_temperature ) == 0 ) {
-
       if ( pdu.type == SNMP_PDU_SET ) {
-
         pdu.type = SNMP_PDU_RESPONSE;
         pdu.error = SNMP_ERR_READ_ONLY;
       }
@@ -174,9 +148,7 @@ void pduReceived() {
         pdu.error = status;
       }
     } else if ( strcmp_P(oid, snmp_humidity ) == 0 ) {
-
       if ( pdu.type == SNMP_PDU_SET ) {
-
         pdu.type = SNMP_PDU_RESPONSE;
         pdu.error = SNMP_ERR_READ_ONLY;
       }
@@ -186,9 +158,7 @@ void pduReceived() {
         pdu.error = status;
       }
     } else if ( strcmp_P(oid, snmp_corriente ) == 0 ) {
-      // handle sysName (set/get) requests
       if ( pdu.type == SNMP_PDU_SET ) {
-
         pdu.type = SNMP_PDU_RESPONSE;
         pdu.error = SNMP_ERR_READ_ONLY;
       }
@@ -207,31 +177,26 @@ void pduReceived() {
   Agentuino.freePdu(&pdu);
 }
 
-
 void setup() {
   Ethernet.begin(mac, ip, ip_dns, ip_gateway, subnet);
-  api_status = Agentuino.begin(); // Inicia agente SNMP
+  api_status = Agentuino.begin(); 
   dht.begin();
-
-  // Verificación estado agente SNMP
   if ( api_status == SNMP_API_STAT_SUCCESS ) {
     Agentuino.onPduReceive(pduReceived);
     delay(10);
     return;
   }
-  
   delay(10);
 }
 
-
 void loop() {
   Agentuino.listen();
-  // Actualiza los valores cada 2s
+  // Actualiza magnitudes cada 2s
   if (millis() - prevMillis > 2000) {
     temperatura = dht.readTemperature();
     humedad = dht.readHumidity();
     corriente = calculo_corriente();
-    
+ 
     prevMillis = millis();
   }
-}
+}  
