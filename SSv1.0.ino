@@ -26,8 +26,8 @@ const float cs_sensitivity = 12.0;
 
 DHT dht(dht_pin, DHT22);
 
-static byte mac[] = {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED};
-IPAddress ip(192, 168, 0, 96);
+static byte mac[] = {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xEF};
+IPAddress ip(192, 168, 0, 95);
 IPAddress ip_dns(192, 168, 1, 1);
 IPAddress ip_gateway(192, 168, 0, 1);
 IPAddress subnet(255, 255, 255, 0);
@@ -36,7 +36,7 @@ char result[8];
 
 const char sysDHT[] PROGMEM = "1.3.6.1.2.1.1.1.0";
 const char sysCurrent[] PROGMEM = "1.3.6.1.2.1.1.4.0";
-const char sysName[] PROGMEM = "1.3.6.1.2.1.1.5.0";
+const char sysSNMP[] PROGMEM = "1.3.6.1.2.1.1.5.0";
 const char sysLocation[] PROGMEM = "1.3.6.1.2.1.1.6.0";
 const char sysServices[] PROGMEM = "1.3.6.1.2.1.1.7.0";
 
@@ -46,7 +46,7 @@ const char snmp_current[] PROGMEM = "1.3.6.1.3.2016.5.1.2";
 
 static char locDHT[35] = " ";
 static char locCurrent[50] = " ";
-static char locName[20] = "Made NOC";
+static char locSNMP[40] = " ";
 static char locLocation[20] = "SMA 638 - CABA";
 static int32_t locServices = 2;
 
@@ -109,14 +109,14 @@ void pduReceived() {
         pdu.error = status;
       }
     }
-    else if (strcmp_P(oid, sysName) == 0) {
+    else if (strcmp_P(oid, sysSNMP) == 0) {
       if (pdu.type == SNMP_PDU_SET) {
-        status = pdu.VALUE.decode(locName, strlen(locName));
+        status = pdu.VALUE.decode(locSNMP, strlen(locSNMP));
         pdu.type = SNMP_PDU_RESPONSE;
         pdu.error = status;
       }
       else {
-        status = pdu.VALUE.encode(SNMP_SYNTAX_OCTETS, locName);
+        status = pdu.VALUE.encode(SNMP_SYNTAX_OCTETS, locSNMP);
         pdu.type = SNMP_PDU_RESPONSE;
         pdu.error = status;
       }
