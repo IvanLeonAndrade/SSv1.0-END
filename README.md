@@ -11,7 +11,7 @@ El equipo sensa temperatura, humedad y corriente continua. Los valores se obtien
 
 ## Configuración del código
 
-IP del dispositivo:
+IP e informacion del dispositivo
 Se deben establecer las direcciones IP correspondientes. La IP del DNS no es necesario cambiar, dejar por defecto.
 
 ```c
