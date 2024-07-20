@@ -1,4 +1,4 @@
-Sistema de Sensado Versión 1.0 (SSv1.0)
+Sistema de Sensado Versión 1.0 (SSv1.0)\n
 Copyright (C) 2023  Iván León Andrade Franco
 Empresa: Silica Networks SA
 
