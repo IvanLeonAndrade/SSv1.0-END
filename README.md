@@ -1,7 +1,9 @@
-@Copyrigth 2023 Silca Networks SA
-Desarrolador: Ivan Andrade
-Fecha:  16/02/2023
-Dispositivo: Sistema de Sensado (SSv1.0)
+Sistema de Sensado Versión 1.0 (SSv1.0)
+Copyright (C) 2023  Iván León Andrade Franco
+Empresa: Silica Networks SA
 
-
-El equipo SSv1.0 sensa temperatura, humedad relativa y corriente continua utilizando la plataforma de desarrollo Arduino y el protocolo SNMP v1.
+Mail Personal: ivan.batapum@gmail.com
+Mail Coorporativo: Ivan.Andrade@datco.net
+ 
+   El equipo sensa temperatura, humedad y corriente 
+   continua. Los valores se obtienen mediante SNMP V1.0
