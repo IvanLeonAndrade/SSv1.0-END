@@ -28,3 +28,7 @@ vector igual a la cantidad de numero de letras + 1.
 
 static char locShelter[7] = "Abasto";
 static char locLocation[5] = "AMBA";
+```
+
+## Verificar Programa
+
