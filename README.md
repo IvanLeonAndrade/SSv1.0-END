@@ -29,4 +29,5 @@ static char locLocation[5] = "AMBA";
 
 ## Verificar Programa
 
-Para verificar el programa importar todas las liberias en el IDE de arduino. Las li
+Para verificar el programa importar todas las liberias en el IDE de arduino manualmente desde la carpeta lib-zip. En
+la carpeta libreries se encuentra un archivo CH341SER, esto es el driver USB para cargar el codigo al Arduino Nano.
