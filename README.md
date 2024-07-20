@@ -33,3 +33,7 @@ Se deben importar librerias y drivers USB. En libs-zip se encuentran las librer�
 importarlas desde el IDE. Algunas librerías se pueden descargar en el IDE pero otras no. Las que están por defecto en el IDE son SPI y Ethernet. 
 
 Tambien en la carpeta principal "libraries-SSv1.0" se encuentra un archivo .zip llamado CH341SER. Este es el driver USB para poder subir el programa al Arduino Nano. Se debe descomprimir y ejecutar el instalador. Dependiendo del Arduino Nano, puede cargar el programa con el Bootloader viejo o nuevo.
+
+
+En el Link https://www.ireasoning.com/downloadmibbrowserfree.php descargar el MIB Browers. En este programa se ingresa la IP del equipo y el OID para obtener el valor obtenido
+por los sensores o las descripciones del equipo definidas.
