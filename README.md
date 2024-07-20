@@ -11,7 +11,7 @@ El equipo sensa temperatura, humedad y corriente continua. Los valores se obtien
 
 ## Configuración del código
 
-IP e informacion del dispositivo
+IP e informacion del dispositivo:
 En IP establecer las direcciones IP correspondientes. La IP del DNS no es necesario cambiar, dejar por defecto. En
 informacion del equipo: En location indicar la zona donde opera la Base (Los tecnicos)
 y en Shelter el nombre del sitio. Se debe ingresar el ancho del
