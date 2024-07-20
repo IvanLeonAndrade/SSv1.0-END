@@ -7,7 +7,7 @@
 **Mail Coorporativo:** Ivan.Andrade@datco.net
 
 ## Descripción:
-El equipo sensa temperatura, humedad y corriente continua. Los valores se obtienen mediante SNMP V1.0. Hecho con Arduino Nano, PCB en KICAD y diseño de la caja en SolidWorks.
+El equipo sensa temperatura, humedad y corriente continua. Los valores se obtienen mediante SNMP V1.0. Hecho con Arduino, PCB en KICAD y diseño de la caja en SolidWorks.
 
 ## Configuración del código
 
