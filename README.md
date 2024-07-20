@@ -9,9 +9,9 @@
 ## Descripción:
 El equipo sensa temperatura, humedad y corriente continua. Los valores se obtienen mediante SNMP V1.0. Hecho con Arduino Nano, PCB en KICAD y diseño de la caja en SolidWorks.
 
-## Configuración del código:
+## Configuración del código
 
-### IP del dispositivo:
+IP del dispositivo:
 Se deben establecer las direcciones IP correspondientes. La IP del DNS no es necesario cambiar, dejar por defecto.
 
 ```c
