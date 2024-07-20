@@ -29,3 +29,4 @@ static char locLocation[5] = "AMBA";
 
 ## Verificar Programa
 
+Para verificar el programa importar todas las liberias en el IDE de arduino. Las li
