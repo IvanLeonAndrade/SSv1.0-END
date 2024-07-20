@@ -20,9 +20,6 @@ IPAddress ip_dns(192, 168, 1, 1);
 IPAddress ip_gateway(192, 168, 0, 1);
 IPAddress subnet(255, 255, 255, 0);
 
-
-
-
 Informacion del equipo:
 
 En location indicar la zona donde opera la Base (Los tecnicos)
