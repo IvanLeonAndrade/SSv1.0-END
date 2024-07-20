@@ -29,5 +29,5 @@ static char locLocation[5] = "AMBA";
 
 ## Verificar Programa
 
-Para verificar el programa importar todas las liberias en el IDE de arduino manualmente desde la carpeta lib-zip. En
-la carpeta libreries se encuentra un archivo CH341SER, esto es el driver USB para cargar el codigo al Arduino Nano.
+Se deben importar librerias y drivers USB. En libs-zip se encuentran las librerías (y las dependencias) que no están por defecto en el IDE de Arduino. Tienen formato .zip para poder 
+importarlas desde el IDE. Algunas librerías se pueden descargar en el IDE pero otras no. Las que están por defecto en el IDE son SPI y Ethernet. Tambien en la carpeta principal "libraries-SSv1.0" se encuentra un archivo .zip llamado CH341SER. Este es el driver USB para poder subir el programa al Arduino Nano. Se debe descomprimir y ejecutar el instalador. Dependiendo del Arduino Nano, puede cargar el programa con el Bootloader viejo o nuevo.
