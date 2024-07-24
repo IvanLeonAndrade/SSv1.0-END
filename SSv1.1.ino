@@ -33,9 +33,9 @@ DHT dht(dht_pin, DHT22);
 
 static byte mac[] = {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xEF};
 
-IPAddress ip(192, 168, 0, 95);
-IPAddress ip_dns(192, 168, 1, 1); 
-IPAddress ip_gateway(192, 168, 0, 1);
+IPAddress ip(192, 168, 1, 95);
+IPAddress ip_dns(192, 168, 5, 1); 
+IPAddress ip_gateway(192, 168, 1, 1);
 IPAddress subnet(255, 255, 255, 0);
 
 char result[8];
