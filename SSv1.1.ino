@@ -1,9 +1,13 @@
-/*  Sistema de Sensado Versión 2.0 (SSv1.0)
+/*  Sistema de Sensado Versión 1.0 (SSv1.0)
  *  Copyright (C) 2023  Iván León Andrade Franco
  *  Empresa: Silica Networks SA
+
+ *  Mail Personal: ivan.batapum@gmail.com
+ *  Mail Coorporativo: Ivan.Andrade@datco.net
  *
- *  Sensa temperature, humidity relativa y current
- *  continua. Las magnitudes obtienen con SNMP v1.
+ *  El equipo sensa temperatura, humedad y corriente 
+ *  continua. Los valores se obtienen mediante SNMP V1.0
+ *
  */
 
 #include <SPI.h>
@@ -11,7 +15,7 @@
 #include <Streaming.h>
 #include <Flash.h>
 #include <MemoryFree.h>
-#include <Agentuino.h>
+#include <Agentuino.h> 
 #include <DHT.h>
 
 const uint8_t dht_pin = 5;
@@ -21,6 +25,7 @@ float current = 0.0;
 float humidity = 0.0;
 float temperature = 0.0;
 
+// Establecer afinidad segun el sensor.
 const float cs_voltage_offset = 2475.0;
 const float cs_sensitivity = 12.0;
 
@@ -29,14 +34,12 @@ DHT dht(dht_pin, DHT22);
 static byte mac[] = {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xEF};
 
 IPAddress ip(192, 168, 0, 95);
-IPAddress ip_dns(192, 168, 1, 1);
+IPAddress ip_dns(192, 168, 1, 1); 
 IPAddress ip_gateway(192, 168, 0, 1);
 IPAddress subnet(255, 255, 255, 0);
 
 char result[8];
 
-const char sysDHT[] PROGMEM = "1.3.6.1.2.1.1.1.0";
-const char sysCurrent[] PROGMEM = "1.3.6.1.2.1.1.4.0";
 const char sysShelter[] PROGMEM = "1.3.6.1.2.1.1.5.0";
 const char sysLocation[] PROGMEM = "1.3.6.1.2.1.1.6.0";
 const char sysServices[] PROGMEM = "1.3.6.1.2.1.1.7.0";
@@ -45,10 +48,8 @@ const char snmp_temperature[] PROGMEM = "1.3.6.1.3.2016.5.1.0";
 const char snmp_humidity[] PROGMEM = "1.3.6.1.3.2016.5.1.1";
 const char snmp_current[] PROGMEM = "1.3.6.1.3.2016.5.1.2";
 
-static char locDHT[2] = " ";
-static char locCurrent[2] = " ";
-static char locShelter[2] = " ";
-static char locLocation[20] = "SMA 638 - CABA";
+static char locShelter[7] = "Abasto";
+static char locLocation[5] = "AMBA";
 static int32_t locServices = 2;
 
 uint32_t prevMillis = millis();
@@ -57,11 +58,11 @@ SNMP_API_STAT_CODES api_status;
 SNMP_ERR_CODES status;
 
 /*  calculo_current
- *  Adjust parameters according to the sensor's characteristics.
+ *  Ajustar los parametros segun las caracteristicas del sensor.
  *  cs: Current sensor
  *  
  *  @cs_sensitivity: Voltage reading ratio per Ampere [12mV/A]
- *  @cs_voltage_offset: Center the voltage reading at 0
+ *  @cs_voltage_offset: Centra la lectura de tension a 0
  */
 float calculate_current(){
   float cs_sum = 0.0;
@@ -74,6 +75,7 @@ float calculate_current(){
   return cs_sum / 4.0;
 }
 
+// La libreria Agentuino maneja las solicitudes SNMP. 
 void pduReceived() {
   SNMP_PDU pdu;
   api_status = Agentuino.requestPdu(&pdu);
@@ -81,20 +83,10 @@ void pduReceived() {
   bool isSnmpGetOperation = pdu.type == SNMP_PDU_GET || pdu.type == SNMP_PDU_GET_NEXT || pdu.type == SNMP_PDU_SET;
   bool isErrorFree = pdu.error == SNMP_ERR_NO_ERROR;
   bool isSuccess = api_status == SNMP_API_STAT_SUCCESS;
+
   if (isSnmpGetOperation && isErrorFree && isSuccess) {
     pdu.OID.toString(oid);
-    if (strcmp_P(oid, sysDHT) == 0) {
-      if (pdu.type == SNMP_PDU_SET) {
-        pdu.type = SNMP_PDU_RESPONSE;
-        pdu.error = SNMP_ERR_READ_ONLY;
-      }
-      else {
-        status = pdu.VALUE.encode(SNMP_SYNTAX_OCTETS, locDHT);
-        pdu.type = SNMP_PDU_RESPONSE;
-        pdu.error = status;
-      }
-    }
-    else if (strcmp_P(oid, sysShelter) == 0) {
+     if (strcmp_P(oid, sysShelter) == 0) {
       if (pdu.type == SNMP_PDU_SET) {
         status = pdu.VALUE.decode(locShelter, strlen(locShelter));
         pdu.type = SNMP_PDU_RESPONSE;
@@ -102,18 +94,6 @@ void pduReceived() {
       }
       else {
         status = pdu.VALUE.encode(SNMP_SYNTAX_OCTETS, locShelter);
-        pdu.type = SNMP_PDU_RESPONSE;
-        pdu.error = status;
-      }
-    }
-    else if (strcmp_P(oid, sysCurrent) == 0) {
-      if (pdu.type == SNMP_PDU_SET) {
-        status = pdu.VALUE.decode(locCurrent, strlen(locCurrent));
-        pdu.type = SNMP_PDU_RESPONSE;
-        pdu.error = status;
-      }
-      else {
-        status = pdu.VALUE.encode(SNMP_SYNTAX_OCTETS, locCurrent);
         pdu.type = SNMP_PDU_RESPONSE;
         pdu.error = status;
       }
