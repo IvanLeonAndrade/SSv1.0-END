@@ -5,7 +5,7 @@
  *  Mail Personal: ivan.batapum@gmail.com
  *  Mail Coorporativo: Ivan.Andrade@datco.net
  *
- *  El equipo sensa temperatura, humedad y corriente 
+ *  El equipo sensa temperatura, humedad y tension 
  *  continua. Los valores se obtienen mediante SNMP V1.0
  *
  */
@@ -25,7 +25,8 @@ float voltage = 0.0;
 float humidity = 0.0;
 float temperature = 0.0;
 
-
+const float real_voltage_reference = 4950.0;
+const float voltage_sensitivity = 90.0;
 
 DHT dht(dht_pin, DHT22);
 
@@ -62,9 +63,6 @@ SNMP_ERR_CODES status;
  *  @cs_sensitivity: Voltage reading ratio per Ampere [12mV/A]
  *  @cs_voltage_offset: Centra la lectura de tension a 0
  */
-//  float fmap(float x, float in_min, float in_max, float out_min, float out_max) {
-//   return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
-// }
 
 float calculate_voltage(){
   float sum = 0.0;
@@ -77,16 +75,10 @@ float calculate_voltage(){
     sum += sensor_in;
     delay(250);
   }
-  
   sensor_in_delta = sum / 4.0;
-  //  long sensorVoltage_mV = map(sensor_in_delta, 0, 1023, 0, 55000);
-  // float sensorVoltage = fmap(sensor_in_delta, 0.0, 1023.0, 0.0, 55.0);
-  voltage_m = ((sensor_in_delta * 4.20) / 1023.0) / 0.09;
-  // voltage_m = (sensor_in_delta * 5.0) / 1023.0;
+  voltage_m = ((sensor_in_delta * real_voltage_reference) / 1023.0) / voltage_sensitivity;
 
   return voltage_m;
-  // return   sensor_in_delta = sum / 5.0;
-
 }
   
 
